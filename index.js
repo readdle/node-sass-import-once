@@ -6,7 +6,8 @@
 
 var fs = require('fs'),
   yaml = require('js-yaml'),
-  path = require('path');
+  path = require('path'),
+  nodeModules = path.resolve(require.resolve("node-sass-import-once"), "../../") + "/";
 
 /**
  * All imports use the forward slash as a directory
@@ -275,7 +276,7 @@ var readAbstractFile = function readAbstractFile(uri, abstractName, cb) {
  **/
 var importer = function importer(uri, prev, done) {
   if (uri[0] === "~") {
-    uri = path.resolve(require.resolve("node-sass-import-once"), "../../") + "/" + uri.slice(1);
+    uri = nodeModules + uri.slice(1);
   }
 
   var isRealFile = fs.existsSync(prev),
