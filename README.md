@@ -1,9 +1,9 @@
 # Import Once
 This is a fork of [node-sass-import-once](https://github.com/at-import/node-sass-import-once) library.
 
-Difference with the original library:
-- stability fixes from [AndreyUtka/node-sass-import-once](https://github.com/AndreyUtka/node-sass-import-once)
-- ability to resolve dependencies from a custom node_modules directory
+## Difference with the original library:
+- Added ability to load dependencies from a node_modules directory (via ~ in path), so you can use it with webpack. Thanx @AndreyUtka
+- Also, you have an ability to load dependencies from a custom node_modules directory via a `createImporterWithCustomNodeModules` function
 
 ## Installation
 ```bash
