@@ -274,65 +274,80 @@ var readAbstractFile = function readAbstractFile(uri, abstractName, cb) {
 /**
  * Import the goodies!
  **/
-var importer = function importer(uri, prev, done) {
-  if (uri[0] === "~") {
-    uri = nodeModules + uri.slice(1);
-  }
+function createImporter(nodeModules) {
+  return function importer(uri, prev, done) {
+    if (uri[0] === "~") {
+      uri = nodeModules + uri.slice(1);
+    }
 
-  var isRealFile = fs.existsSync(prev),
-    io = importOnce.bind(this),
-    raf = readAbstractFile.bind(this),
-    file;
+    var isRealFile = fs.existsSync(prev),
+      io = importOnce.bind(this),
+      raf = readAbstractFile.bind(this),
+      file;
 
-  // Ensure options are available
-  if (!this.options.importOnce) {
-    this.options.importOnce = {};
-  }
+    // Ensure options are available
+    if (!this.options.importOnce) {
+      this.options.importOnce = {};
+    }
 
-  // Set default index import
-  if (!this.options.importOnce.index) {
-    this.options.importOnce.index = false;
-  }
+    // Set default index import
+    if (!this.options.importOnce.index) {
+      this.options.importOnce.index = false;
+    }
 
-  // Set default bower import
-  if (!this.options.importOnce.bower) {
-    this.options.importOnce.bower = false;
-  }
+    // Set default bower import
+    if (!this.options.importOnce.bower) {
+      this.options.importOnce.bower = false;
+    }
 
-  // Set default css import
-  if (!this.options.importOnce.css) {
-    this.options.importOnce.css = false;
-  }
+    // Set default css import
+    if (!this.options.importOnce.css) {
+      this.options.importOnce.css = false;
+    }
 
-  // Create an import cache if it doesn't exist
-  if (!this._importOnceCache) {
-    this._importOnceCache = {};
-  }
+    // Create an import cache if it doesn't exist
+    if (!this._importOnceCache) {
+      this._importOnceCache = {};
+    }
 
-  if (isRealFile) {
-    file = path.resolve(path.dirname(prev), makeFsPath(uri));
-    raf(uri, file, function (err, data) {
-      if (err) {
-        console.log(err.toString());
-        done({});
-      }
-      else {
-        io(data, done);
-      }
-    });
-  }
-  else {
-    raf(uri, process.cwd(), function (err, data) {
-      if (err) {
-        console.log(err.toString());
-        done({});
-      }
-      else {
-        io(data, done);
-      }
-    });
-  }
-};
+    if (isRealFile) {
+      file = path.resolve(path.dirname(prev), makeFsPath(uri));
+      raf(uri, file, function (err, data) {
+        if (err) {
+          console.log(err.toString());
+          done({});
+        }
+        else {
+          io(data, done);
+        }
+      });
+    }
+    else {
+      raf(uri, process.cwd(), function (err, data) {
+        if (err) {
+          console.log(err.toString());
+          done({});
+        }
+        else {
+          io(data, done);
+        }
+      });
+    }
+  };
+}
+
+// keep the old interface for backward compatibility
+var importer = createImporter(nodeModules);
+// invoke this function if you want to resolve dependencies from custom node_modules directory
+// it will be useful if you want to store your build scripts inside the separate project
+importer.createImporterWithCustomNodeModules = function(customNodeModulesPath) {
+  var pathHasEndShash = customNodeModulesPath[customNodeModulesPath.length - 1] === "/";
+  customNodeModulesPath = !pathHasEndShash
+    ? customNodeModulesPath + "/"
+    : customNodeModulesPath;
+
+  return createImporter(customNodeModulesPath);
+}
 
 /**
  * Exports the importer

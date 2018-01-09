@@ -1,24 +1,37 @@
-# Import Once [![npm version](https://badge.fury.io/js/node-sass-import-once.svg)](http://badge.fury.io/js/node-sass-import-once) [![Build Status](https://travis-ci.org/at-import/node-sass-import-once.svg)](https://travis-ci.org/at-import/node-sass-import-once)
+# Import Once
+This is a fork of [node-sass-import-once](https://github.com/at-import/node-sass-import-once) library.
 
-General `import-once` importer for [`node-sass`](https://github.com/sass/node-sass) inspired by [Eyeglass](https://github.com/sass-eyeglass/eyeglass).
+Difference with the original library:
+- stability fixes from [AndreyUtka/node-sass-import-once](https://github.com/AndreyUtka/node-sass-import-once)
+- ability to resolve dependencies from a custom node_modules directory
 
 ## Installation
-
 ```bash
 $ npm install node-sass-import-once --save-dev
 ```
 
-**Requires [Node Sass](https://github.com/sass/node-sass) >= v3.0.0-alpha.5**
-
 ## Usage
 
 ```javascript
-var sass = require('node-sass');,
+var sass = require('node-sass');
     importOnce = require('node-sass-import-once');
 
+// general usage
 sass.render({
   file: scss_filename,
   importer: importOnce,
+  importOnce: {
+    index: false,
+    css: false,
+    bower: false
+  }
+});
+
+// usage with a custom node_modules directory
+var customNodeModulesPath = "/my/custom/path/to/node_modules";
+sass.render({
+  file: scss_filename,
+  importer: importOnce.createImporterWithCustomNodeModules(customNodeModulesPath),
   importOnce: {
     index: false,
     css: false,
