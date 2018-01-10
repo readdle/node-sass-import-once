@@ -8,7 +8,7 @@ This is a fork of [node-sass-import-once](https://github.com/at-import/node-sass
 ## Usage
 
 ```javascript
-var sass = require('node-sass');
+var sass = require('node-sass'),
     importOnce = require('node-sass-import-once');
 
 // general usage
